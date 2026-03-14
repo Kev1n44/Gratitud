@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Sembremos Gratitud</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Pantalla de Inicio (con Popup de Bienvenida) -->
+        <div id="start-screen" class="screen active">
+            <div class="popup welcome-popup">
+                <h1>🌱 ¡Bienvenido a Sembremos Gratitud! 🌱</h1>
+                <p>Hola, amiguito! Prepárate para una aventura donde aprenderemos a cuidar la naturaleza y a dar las gracias por todo lo que nos da. Elige cómo quieres jugar:</p>
+                <div class="button-container">
+                    <button id="instrucciones-aprendizaje-btn" class="btn btn-primary">📚 Modo Aprendizaje</button>
+                    <button id="instrucciones-habilidad-btn" class="btn btn-primary">⚡ Modo Habilidad</button>
+                </div>
+                <p class="footer-note">¡Presiona un botón para ver las instrucciones!</p>
+            </div>
+        </div>
+
+        <!-- Pantalla de Instrucciones de Aprendizaje -->
+        <div id="instrucciones-aprendizaje-screen" class="screen">
+            <div class="popup instrucciones-popup">
+                <h2>📚 Modo Aprendizaje</h2>
+                <p>Aquí aprenderás qué cosas ayudan a crecer a una planta y cuáles no. ¡Como en la vida, donde las cosas buenas nos hacen crecer con gratitud!</p>
+                <p><strong>✨ ¿Cómo jugar?</strong></p>
+                <ul>
+                    <li>Verás una plantita en el centro y emojis flotando a su alrededor.</li>
+                    <li>Arrastra los emojis BUENOS (💧, 🌱, ☀️, etc.) hasta la planta para ayudarla a crecer.</li>
+                    <li>¡Ten cuidado! Si arrastras un emoji MALO (🪨, 🔥, etc.), la planta se asustará (destello rojo).</li>
+                    <li>Por cada 4 emojis buenos que le des, ¡tu planta crecerá un poquito más!</li>
+                    <li>Tu objetivo es hacer que la planta pase de pequeña a mediana y luego a grande.</li>
+                </ul>
+                <button id="jugar-aprendizaje-btn" class="btn btn-primary">🌱 ¡A jugar aprendizaje!</button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Instrucciones de Habilidad -->
+        <div id="instrucciones-habilidad-screen" class="screen">
+            <div class="popup instrucciones-popup">
+                <h2>⚡ Modo Habilidad</h2>
+                <p>¡Pon a prueba tu rapidez! Ayuda a la planta a recibir solo lo bueno y esquiva lo malo. La gratitud también es rápida y certera.</p>
+                <p><strong>✨ ¿Cómo jugar?</strong></p>
+                <ul>
+                    <li>Los emojis pasarán volando de izquierda a derecha sobre la plantita.</li>
+                    <li>Debes tocar el emoji JUSTO cuando esté sobre el círculo mágico en el centro de la planta.</li>
+                    <li>Si tocas un emoji BUENO, sumas 2 puntos.</li>
+                    <li>Si tocas un emoji MALO, pierdes 2 puntos.</li>
+                    <li>Cuando llegues a 10 puntos, la planta crecerá a mediana. ¡Sigue! Cuando llegues a 20 puntos, se hará grande y ganarás.</li>
+                </ul>
+                <button id="jugar-habilidad-btn" class="btn btn-primary">⚡ ¡A jugar habilidad!</button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Juego (Aquí se dibujan ambos modos) -->
+        <div id="game-screen" class="screen">
+            <canvas id="game-canvas"></canvas>
+            
+            <!-- UI superpuesta al canvas -->
+            <div id="game-ui">
+                <div id="modo-header">
+                    <span id="modo-titulo"></span>
+                    <span id="puntos-container" style="display: none;">⭐ Puntos: <span id="puntos-valor">0</span>/20</span>
+                </div>
+                <button id="back-to-start-btn" class="btn btn-small">🏠 Inicio</button>
+            </div>
+        </div>
+
+        <!-- Footer con el Logo -->
+        <footer>
+            <img src="Logo.png" alt="Logo Abrazos que emocionan" id="logo-footer">
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

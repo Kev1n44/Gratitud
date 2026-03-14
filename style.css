@@ -1,0 +1,270 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded', sans-serif; /* Fuente amigable */
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden; /* Evita que la página completa se desplace; todo ocurre dentro del juego */
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #2e5a2e; /* Un verde oscuro para el borde */
+}
+
+.game-container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px; /* Ancho máximo para pantallas grandes */
+    height: 100dvh; /* Usa la altura visual real, especialmente en móviles */
+    max-height: 800px;
+    background-color: #87CEEB; /* Color de fondo por si la imagen no carga */
+    background-image: url('Fondo.jpg');
+    background-size: cover;
+    background-position: center;
+    border-radius: 30px;
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Pantallas (start, instrucciones, juego) */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 80px); /* Dejar espacio para el footer */
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 10;
+    overflow: hidden; /* Evita scroll general; lo hará solo el contenido interno (popup) */
+}
+
+.screen.active {
+    display: flex;
+}
+
+/* Estilos del Popup */
+.popup {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 30px 25px;
+    border-radius: 50px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    border: 5px solid #f0b27a; /* Color tierra/cálido */
+    backdrop-filter: blur(5px);
+    max-height: calc(100% - 40px); /* Deja respirar el borde de la pantalla */
+    overflow-y: auto; /* Barra de desplazamiento interna para instrucciones largas */
+}
+
+.popup h1, .popup h2 {
+    color: #2d6a4f;
+    margin-bottom: 15px;
+    font-size: 2rem;
+    text-shadow: 2px 2px 0 #a9d6e5;
+}
+
+.popup p {
+    color: #1e3c2c;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.popup ul {
+    text-align: left;
+    margin-bottom: 20px;
+    padding-left: 25px;
+    color: #1e3c2c;
+    font-size: 1.1rem;
+}
+.popup li {
+    margin-bottom: 8px;
+}
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin: 25px 0 10px;
+}
+
+.btn {
+    padding: 15px 25px;
+    border: none;
+    border-radius: 60px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 5px 0 #a5714c;
+    border: 2px solid #ffe3b0;
+    color: white;
+    flex: 1 1 auto;
+    min-width: 200px;
+}
+
+.btn-primary {
+    background-color: #ffb347; /* Naranja alegre */
+}
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 0 #a5714c;
+}
+
+.btn-small {
+    padding: 8px 15px;
+    font-size: 1.1rem;
+    min-width: auto;
+    background-color: #52b788;
+    box-shadow: 0 4px 0 #2d6a4f;
+}
+
+.footer-note {
+    font-size: 1rem;
+    color: #555;
+    margin-top: 15px;
+}
+
+/* Pantalla de Juego - Canvas */
+#game-screen {
+    padding: 0;
+    background: transparent; /* El fondo lo pone el canvas */
+}
+
+#game-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: transparent; /* El fondo es la imagen en CSS */
+    /* Importante en móviles: permite arrastrar dentro del canvas sin que se desplace la pantalla */
+    touch-action: none;
+}
+
+/* UI superpuesta en el juego */
+#game-ui {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    z-index: 20;
+    pointer-events: none; /* Permite hacer clic a través del header, excepto el botón */
+}
+
+#game-ui * {
+    pointer-events: auto; /* El botón y el texto sí reciben clics */
+}
+
+#modo-header {
+    background-color: rgba(255, 255, 200, 0.8);
+    padding: 8px 18px;
+    border-radius: 40px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #1e3c2c;
+    border: 2px solid #f0b27a;
+    box-shadow: 0 4px 0 #a5714c;
+}
+
+#puntos-container {
+    margin-left: 15px;
+    background-color: #f9d56e;
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+#back-to-start-btn {
+    background-color: #d8a7b1; /* Rosado suave */
+    box-shadow: 0 4px 0 #b07d8a;
+    font-size: 1rem;
+    border: 2px solid white;
+}
+
+/* Footer con Logo */
+footer {
+    height: 80px;
+    width: 100%;
+    background-color: rgba(80, 50, 20, 0.7); /* Marrón semi-transparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
+    border-top: 3px solid #f0b27a;
+    position: relative;
+    z-index: 30; /* Por encima de las pantallas para que el logo siempre se vea */
+}
+
+#logo-footer {
+    max-height: 60px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+}
+
+/* Responsividad para tablets y móviles */
+@media (max-width: 768px) {
+    body {
+        justify-content: flex-start; /* Que el juego comience desde arriba en móviles */
+        align-items: stretch;        /* El contenedor ocupa todo el ancho disponible */
+    }
+
+    .game-container {
+        height: 100dvh; /* Ajusta también en móviles para incluir siempre el footer */
+        max-height: none;
+        border-radius: 0;
+    }
+    .popup h1 {
+        font-size: 1.5rem;
+    }
+    .popup p, .popup li {
+        font-size: 1rem;
+    }
+    .btn {
+        font-size: 1.1rem;
+        padding: 12px 15px;
+        min-width: 150px;
+    }
+    #modo-header {
+        font-size: 1rem;
+    }
+    #back-to-start-btn {
+        font-size: 0.9rem;
+        padding: 5px 10px;
+    }
+    footer {
+        height: 60px;
+    }
+    #logo-footer {
+        max-height: 45px;
+    }
+}
+
+/* Para móviles muy pequeños */
+@media (max-width: 480px) {
+    .popup {
+        padding: 20px 15px;
+    }
+    .button-container {
+        flex-direction: column;
+    }
+    .btn {
+        width: 100%;
+    }
+}
