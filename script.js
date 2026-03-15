@@ -554,8 +554,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function getCentrosDestreza() {
         const cx = canvas.width / 2;
         const cy = canvas.height / 2;
-        const centroYPlanta = cy * 0.38;
-        const centroYCirculos = cy * 0.78;
+        const centroYPlanta = cy;  // planta en el centro, igual que Modo Aprendizaje
+        const centroYCirculos = cy + canvas.height * 0.28;  // círculos debajo de la planta
         const separacion = canvas.width * 0.22;
         return {
             planta: { x: cx, y: centroYPlanta },
@@ -716,29 +716,45 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!destrezaState.esperandoPopup && destrezaState.barraIzq >= 100 && destrezaState.barraDer >= 100) {
             destrezaState.esperandoPopup = true;
             if (destrezaState.etapa === 0) {
-                destrezaState.barraIzq = 50;
-                destrezaState.barraDer = 50;
+                destrezaState.barraIzq = 0;
+                destrezaState.barraDer = 0;
                 destrezaState.etapa = 1;
-                plantaImagen.src = imagenes.mediana;
-                mostrarMensajeCrecimientoDestreza('🌿 ¡La planta ha crecido! Ahora es Planta 2. Llena de nuevo las dos barras para convertirla en Planta 3.', () => { destrezaState.esperandoPopup = false; });
+                iluminarPlanta(() => {
+                    plantaImagen.src = imagenes.mediana;
+                    mostrarMensajeCrecimientoDestreza(
+                        '¡Felicidades! Has ayudado a la planta a crecer a mediana. 🌿 Sigue así, 4 elementos buenos más y será grande.',
+                        { from: 'pequena', to: 'mediana' },
+                        () => { destrezaState.esperandoPopup = false; }
+                    );
+                });
             } else if (destrezaState.etapa === 1) {
-                destrezaState.barraIzq = 50;
-                destrezaState.barraDer = 50;
+                destrezaState.barraIzq = 0;
+                destrezaState.barraDer = 0;
                 destrezaState.etapa = 2;
-                plantaImagen.src = imagenes.grande;
-                mostrarMensajeCrecimientoDestreza('🌿 ¡La planta ha crecido! Ahora es Planta 3. Llena las dos barras una vez más para ganar.', () => { destrezaState.esperandoPopup = false; });
+                iluminarPlanta(() => {
+                    plantaImagen.src = imagenes.grande;
+                    mostrarMensajeCrecimientoDestreza(
+                        '¡Guau! Ya es una planta mediana. Con 4 más será grande y ganarás.',
+                        { from: 'mediana', to: 'grande' },
+                        () => { destrezaState.esperandoPopup = false; }
+                    );
+                });
             } else if (destrezaState.etapa === 2) {
                 destrezaState.barraIzq = 0;
                 destrezaState.barraDer = 0;
-                mostrarPopupVictoria();
-                destrezaState.esperandoPopup = false;
+                iluminarPlanta(() => {
+                    plantaImagen.src = imagenes.grande;
+                    estallarPlanta(true);
+                    mostrarPopupVictoria();
+                    destrezaState.esperandoPopup = false;
+                });
             }
         }
 
         animationFrameId = requestAnimationFrame(dibujarCanvasDestreza);
     }
 
-    function mostrarMensajeCrecimientoDestreza(mensaje, onClose) {
+    function mostrarMensajeCrecimientoDestreza(mensaje, opcionesCambio, onClose) {
         const popupDiv = document.createElement('div');
         popupDiv.className = 'popup mensaje-popup';
         popupDiv.style.position = 'absolute';
@@ -746,9 +762,22 @@ document.addEventListener('DOMContentLoaded', () => {
         popupDiv.style.left = '50%';
         popupDiv.style.transform = 'translate(-50%, -50%)';
         popupDiv.style.zIndex = '100';
+        let htmlCambio = '';
+        if (opcionesCambio && opcionesCambio.from && opcionesCambio.to) {
+            const srcFrom = opcionesCambio.from === 'pequena' ? imagenes.pequena : opcionesCambio.from === 'mediana' ? imagenes.mediana : imagenes.grande;
+            const srcTo = opcionesCambio.to === 'pequena' ? imagenes.pequena : opcionesCambio.to === 'mediana' ? imagenes.mediana : imagenes.grande;
+            htmlCambio = `
+                <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin:12px 0;">
+                    <img src="${srcFrom}" alt="Planta antes" style="height:70px;width:auto;border-radius:12px;box-shadow:0 0 6px rgba(0,0,0,0.3);background:#fff4d1;padding:4px;">
+                    <span style="font-size:2rem;">➡️</span>
+                    <img src="${srcTo}" alt="Planta después" style="height:90px;width:auto;border-radius:12px;box-shadow:0 0 6px rgba(0,0,0,0.35);background:#fffbee;padding:4px;">
+                </div>
+            `;
+        }
         popupDiv.innerHTML = `
             <h3>🌱 ¡Crecer! 🌱</h3>
             <p>${mensaje}</p>
+            ${htmlCambio}
             <button class="btn btn-primary" id="continuar-popup-destreza">Continuar</button>
         `;
         document.querySelector('.game-container').appendChild(popupDiv);
