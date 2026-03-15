@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const startScreen = document.getElementById('start-screen');
     const instruccionesAprendizajeScreen = document.getElementById('instrucciones-aprendizaje-screen');
     const instruccionesHabilidadScreen = document.getElementById('instrucciones-habilidad-screen');
+    const instruccionesDestrezaScreen = document.getElementById('instrucciones-destreza-screen');
     const gameScreen = document.getElementById('game-screen');
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
@@ -31,6 +32,15 @@ document.addEventListener('DOMContentLoaded', () => {
         gameScreen.classList.add('active');
         iniciarModoHabilidad();
     });
+    document.getElementById('instrucciones-destreza-btn').addEventListener('click', () => {
+        startScreen.classList.remove('active');
+        instruccionesDestrezaScreen.classList.add('active');
+    });
+    document.getElementById('jugar-destreza-btn').addEventListener('click', () => {
+        instruccionesDestrezaScreen.classList.remove('active');
+        gameScreen.classList.add('active');
+        iniciarModoDestreza();
+    });
     backToStartBtn.addEventListener('click', () => {
         // Reiniciar todo y volver al inicio
         cancelAnimationFrame(animationFrameId);
@@ -42,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Variables globales del juego ---
     let animationFrameId;
-    let modoActual = null; // 'aprendizaje' o 'habilidad'
+    let modoActual = null; // 'aprendizaje', 'habilidad' o 'destreza'
     let plantaImagen = new Image();
     let plantaActual = 'pequena'; // pequena, mediana, grande
     const imagenes = {
@@ -523,6 +533,270 @@ document.addEventListener('DOMContentLoaded', () => {
         animationFrameId = requestAnimationFrame(dibujarCanvasHabilidad);
     }
 
+    // --- Modo Destreza ---
+    const RADIO_DESTREZA = 60;
+    const ESPACIO_VERTICAL_DESTREZA = RADIO_DESTREZA * 2; // mismo diámetro que el círculo (ref. Modo habilidad)
+    const VELOCIDAD_BAJADA_DESTREZA = 2;
+    const SUBIDA_BARRA_BUENO = 18;
+    const BAJADA_BARRA_MALO = 30;
+    const DECAY_BARRA_POR_FRAME = 0.04;
+
+    let destrezaState = {
+        barraIzq: 50,
+        barraDer: 50,
+        etapa: 0, // 0: Planta 1 -> 2, 1: Planta 2 -> 3, 2: Planta 3 -> victoria
+        emojisColaIzq: [],
+        emojisColaDer: [],
+        velocidad: VELOCIDAD_BAJADA_DESTREZA,
+        esperandoPopup: false
+    };
+
+    function getCentrosDestreza() {
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+        const centroYPlanta = cy * 0.38;
+        const centroYCirculos = cy * 0.78;
+        const separacion = canvas.width * 0.22;
+        return {
+            planta: { x: cx, y: centroYPlanta },
+            izq: { x: cx - separacion, y: centroYCirculos },
+            der: { x: cx + separacion, y: centroYCirculos }
+        };
+    }
+
+    function generarColaVerticalDestreza(centroX, esIzq) {
+        const centros = getCentrosDestreza();
+        const columnaY = esIzq ? centros.izq.y : centros.der.y;
+        const tipos = [];
+        for (let i = 0; i < 12; i++) tipos.push('bueno');
+        for (let i = 0; i < 12; i++) tipos.push('malo');
+        shuffleArray(tipos);
+        const cola = [];
+        let emojiAnterior = null;
+        for (let i = 0; i < 24; i++) {
+            const esBueno = tipos[i] === 'bueno';
+            const arr = esBueno ? emojisBuenos : emojisMalos;
+            const opciones = emojiAnterior ? arr.filter(d => d.emoji !== emojiAnterior) : arr;
+            const data = opciones.length ? opciones[Math.floor(Math.random() * opciones.length)] : arr[Math.floor(Math.random() * arr.length)];
+            emojiAnterior = data.emoji;
+            cola.push({
+                ...data,
+                x: centroX,
+                y: -80 - i * ESPACIO_VERTICAL_DESTREZA,
+                activo: true,
+                id: `d-${esIzq ? 'L' : 'R'}-${i}-${Date.now()}`
+            });
+        }
+        return cola;
+    }
+
+    function iniciarModoDestreza() {
+        modoActual = 'destreza';
+        puntosContainer.style.display = 'none';
+        modoTitulo.innerText = '🎯 Modo Destreza';
+        const centros = getCentrosDestreza();
+        destrezaState = {
+            barraIzq: 50,
+            barraDer: 50,
+            etapa: 0,
+            emojisColaIzq: generarColaVerticalDestreza(centros.izq.x, true),
+            emojisColaDer: generarColaVerticalDestreza(centros.der.x, false),
+            velocidad: VELOCIDAD_BAJADA_DESTREZA,
+            esperandoPopup: false
+        };
+        plantaImagen.src = imagenes.pequena;
+        canvas.style.pointerEvents = 'auto';
+        dibujarCanvasDestreza();
+    }
+
+    function dibujarCanvasDestreza() {
+        if (modoActual !== 'destreza') return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const centros = getCentrosDestreza();
+        const R = RADIO_DESTREZA;
+
+        // Planta en el centro arriba
+        if (plantaImagen.complete) {
+            const size = 130;
+            ctx.drawImage(plantaImagen, centros.planta.x - size / 2, centros.planta.y - size / 2, size, size);
+        }
+
+        // Decay de barras (lento si no tocas buenos)
+        destrezaState.barraIzq = Math.max(0, destrezaState.barraIzq - DECAY_BARRA_POR_FRAME);
+        destrezaState.barraDer = Math.max(0, destrezaState.barraDer - DECAY_BARRA_POR_FRAME);
+
+        // Mover emojis hacia abajo (izq y der)
+        destrezaState.emojisColaIzq.forEach(e => {
+            e.y += destrezaState.velocidad;
+        });
+        destrezaState.emojisColaDer.forEach(e => {
+            e.y += destrezaState.velocidad;
+        });
+
+        // Reciclar emojis que salieron por abajo: recolocar arriba
+        const margenAbajo = 100;
+        const techo = -80;
+        function reciclarColumna(columna, centroX) {
+            let minY = Infinity;
+            columna.forEach(em => { if (em.y < minY) minY = em.y; });
+            let nuevoMinY = minY;
+            columna.forEach(e => {
+                if (e.y > canvas.height + margenAbajo) {
+                    const esBueno = Math.random() < 0.5;
+                    const arr = esBueno ? emojisBuenos : emojisMalos;
+                    const data = arr[Math.floor(Math.random() * arr.length)];
+                    Object.assign(e, data);
+                    e.y = nuevoMinY - ESPACIO_VERTICAL_DESTREZA;
+                    e.activo = true;
+                    nuevoMinY = e.y;
+                }
+            });
+        }
+        reciclarColumna(destrezaState.emojisColaIzq, centros.izq.x);
+        reciclarColumna(destrezaState.emojisColaDer, centros.der.x);
+
+        // Dibujar círculo izquierdo + barra alrededor
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(centros.izq.x, centros.izq.y, R + 12, 0, 2 * Math.PI);
+        ctx.strokeStyle = '#444';
+        ctx.lineWidth = 8;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(centros.izq.x, centros.izq.y, R + 12, -Math.PI / 2, -Math.PI / 2 + (destrezaState.barraIzq / 100) * 2 * Math.PI);
+        ctx.strokeStyle = '#2ecc71';
+        ctx.lineWidth = 8;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(centros.izq.x, centros.izq.y, R, 0, 2 * Math.PI);
+        ctx.fillStyle = 'rgba(255, 255, 0, 0.2)';
+        ctx.fill();
+        ctx.strokeStyle = '#ffaa00';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.restore();
+
+        // Círculo derecho + barra
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(centros.der.x, centros.der.y, R + 12, 0, 2 * Math.PI);
+        ctx.strokeStyle = '#444';
+        ctx.lineWidth = 8;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(centros.der.x, centros.der.y, R + 12, -Math.PI / 2, -Math.PI / 2 + (destrezaState.barraDer / 100) * 2 * Math.PI);
+        ctx.strokeStyle = '#2ecc71';
+        ctx.lineWidth = 8;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(centros.der.x, centros.der.y, R, 0, 2 * Math.PI);
+        ctx.fillStyle = 'rgba(255, 255, 0, 0.2)';
+        ctx.fill();
+        ctx.strokeStyle = '#ffaa00';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.restore();
+
+        // Mantener emojis alineados al centro de cada círculo (por si se redimensiona)
+        destrezaState.emojisColaIzq.forEach(e => { e.x = centros.izq.x; });
+        destrezaState.emojisColaDer.forEach(e => { e.x = centros.der.x; });
+
+        // Dibujar emojis (izq y der)
+        ctx.font = '50px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        destrezaState.emojisColaIzq.forEach(e => {
+            if (e.activo) ctx.fillText(e.emoji, e.x, e.y);
+        });
+        destrezaState.emojisColaDer.forEach(e => {
+            if (e.activo) ctx.fillText(e.emoji, e.x, e.y);
+        });
+
+        // Comprobar si las dos barras están llenas (>= 100) para avanzar etapa
+        if (!destrezaState.esperandoPopup && destrezaState.barraIzq >= 100 && destrezaState.barraDer >= 100) {
+            destrezaState.esperandoPopup = true;
+            if (destrezaState.etapa === 0) {
+                destrezaState.barraIzq = 50;
+                destrezaState.barraDer = 50;
+                destrezaState.etapa = 1;
+                plantaImagen.src = imagenes.mediana;
+                mostrarMensajeCrecimientoDestreza('🌿 ¡La planta ha crecido! Ahora es Planta 2. Llena de nuevo las dos barras para convertirla en Planta 3.', () => { destrezaState.esperandoPopup = false; });
+            } else if (destrezaState.etapa === 1) {
+                destrezaState.barraIzq = 50;
+                destrezaState.barraDer = 50;
+                destrezaState.etapa = 2;
+                plantaImagen.src = imagenes.grande;
+                mostrarMensajeCrecimientoDestreza('🌿 ¡La planta ha crecido! Ahora es Planta 3. Llena las dos barras una vez más para ganar.', () => { destrezaState.esperandoPopup = false; });
+            } else if (destrezaState.etapa === 2) {
+                destrezaState.barraIzq = 0;
+                destrezaState.barraDer = 0;
+                mostrarPopupVictoria();
+                destrezaState.esperandoPopup = false;
+            }
+        }
+
+        animationFrameId = requestAnimationFrame(dibujarCanvasDestreza);
+    }
+
+    function mostrarMensajeCrecimientoDestreza(mensaje, onClose) {
+        const popupDiv = document.createElement('div');
+        popupDiv.className = 'popup mensaje-popup';
+        popupDiv.style.position = 'absolute';
+        popupDiv.style.top = '50%';
+        popupDiv.style.left = '50%';
+        popupDiv.style.transform = 'translate(-50%, -50%)';
+        popupDiv.style.zIndex = '100';
+        popupDiv.innerHTML = `
+            <h3>🌱 ¡Crecer! 🌱</h3>
+            <p>${mensaje}</p>
+            <button class="btn btn-primary" id="continuar-popup-destreza">Continuar</button>
+        `;
+        document.querySelector('.game-container').appendChild(popupDiv);
+        document.getElementById('continuar-popup-destreza').addEventListener('click', () => {
+            popupDiv.remove();
+            if (typeof onClose === 'function') onClose();
+        });
+    }
+
+    function procesarTapDestreza(clientX, clientY) {
+        if (modoActual !== 'destreza' || destrezaState.esperandoPopup) return;
+        const { x: tapX, y: tapY } = getPosicionEnCanvasEscalada(clientX, clientY);
+        const centros = getCentrosDestreza();
+        const R = RADIO_DESTREZA;
+        const margenToque = 25;
+        const radioTap = R + margenToque;
+
+        const distIzq = Math.sqrt((tapX - centros.izq.x) ** 2 + (tapY - centros.izq.y) ** 2);
+        const distDer = Math.sqrt((tapX - centros.der.x) ** 2 + (tapY - centros.der.y) ** 2);
+        const enIzq = distIzq <= radioTap;
+        const enDer = distDer <= radioTap;
+        if (!enIzq && !enDer) return;
+
+        const columna = enIzq ? destrezaState.emojisColaIzq : destrezaState.emojisColaDer;
+        const centro = enIzq ? centros.izq : centros.der;
+        let mejorEmoji = null;
+        let mejorDist = Infinity;
+        columna.forEach(e => {
+            if (!e.activo) return;
+            const dist = Math.sqrt((e.x - centro.x) ** 2 + (e.y - centro.y) ** 2);
+            if (dist <= R && dist < mejorDist) {
+                mejorDist = dist;
+                mejorEmoji = e;
+            }
+        });
+        if (!mejorEmoji) return;
+
+        const esBueno = emojisBuenos.some(b => b.emoji === mejorEmoji.emoji);
+        mejorEmoji.activo = false;
+        if (enIzq) {
+            if (esBueno) destrezaState.barraIzq = Math.min(100, destrezaState.barraIzq + SUBIDA_BARRA_BUENO);
+            else destrezaState.barraIzq = Math.max(0, destrezaState.barraIzq - BAJADA_BARRA_MALO);
+        } else {
+            if (esBueno) destrezaState.barraDer = Math.min(100, destrezaState.barraDer + SUBIDA_BARRA_BUENO);
+            else destrezaState.barraDer = Math.max(0, destrezaState.barraDer - BAJADA_BARRA_MALO);
+        }
+    }
+
     // --- Eventos de Canvas (Drag & Drop para Aprendizaje, Click para Habilidad) ---
     let draggedEmoji = null;
     let offsetX, offsetY;
@@ -820,6 +1094,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let touchHabilidadUsado = false;
     canvas.addEventListener('click', (e) => {
+        if (modoActual === 'destreza') {
+            procesarTapDestreza(e.clientX, e.clientY);
+            return;
+        }
         if (touchHabilidadUsado) {
             touchHabilidadUsado = false;
             return;
@@ -828,6 +1106,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     canvas.addEventListener('touchstart', (e) => {
+        if (modoActual === 'destreza') {
+            if (e.touches && e.touches.length > 0) {
+                const t = e.touches[0];
+                procesarTapDestreza(t.clientX, t.clientY);
+                e.preventDefault();
+            }
+            return;
+        }
         if (modoActual !== 'habilidad' || habilidadState.esperandoPopup) return;
         if (e.touches && e.touches.length > 0) {
             const t = e.touches[0];
