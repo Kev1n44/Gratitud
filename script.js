@@ -106,6 +106,22 @@ document.addEventListener('DOMContentLoaded', () => {
         gameScreen.classList.add('active');
         iniciarModoDestreza();
     });
+    // Botones "Volver al inicio" en las pantallas de instrucciones
+    document.getElementById('volver-inicio-aprendizaje-btn').addEventListener('click', () => {
+        reiniciarJuego();
+        instruccionesAprendizajeScreen.classList.remove('active');
+        startScreen.classList.add('active');
+    });
+    document.getElementById('volver-inicio-habilidad-btn').addEventListener('click', () => {
+        reiniciarJuego();
+        instruccionesHabilidadScreen.classList.remove('active');
+        startScreen.classList.add('active');
+    });
+    document.getElementById('volver-inicio-destreza-btn').addEventListener('click', () => {
+        reiniciarJuego();
+        instruccionesDestrezaScreen.classList.remove('active');
+        startScreen.classList.add('active');
+    });
     backToStartBtn.addEventListener('click', () => {
         // Reiniciar todo y volver al inicio
         reiniciarJuego();
@@ -600,7 +616,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const RADIO_DESTREZA = 60;
     const ESPACIO_VERTICAL_DESTREZA = RADIO_DESTREZA * 2; // mismo diámetro que el círculo (ref. Modo habilidad)
     const VELOCIDAD_BAJADA_DESTREZA = 2;
-    const SUBIDA_BARRA_BUENO = 18;
+    const SUBIDA_BARRA_BUENO = 12;
     const BAJADA_BARRA_MALO = 30;
     const DECAY_BARRA_POR_FRAME = 0.04;
     const UMBRAL_DESTREZA = 90; // porcentaje a partir del cual cuenta para el cambio de planta
@@ -1282,15 +1298,51 @@ document.addEventListener('DOMContentLoaded', () => {
         mejorEmoji.activo = false;
         habilidadState.velocidad += 0.2;
 
+        // Rondas del modo habilidad: 10, 20 y 30 puntos
         if (habilidadState.puntos >= 10 && habilidadState.etapa === 0) {
+            // Ronda 1 completada: Planta 1 -> Planta 2
             habilidadState.etapa = 1;
-            plantaImagen.src = imagenes.mediana;
-            mostrarMensajeCrecimiento('🎉 ¡Has llegado a 10! La planta es mediana. Sigue para los 20.');
-            habilidadState.velocidad = 3;
+            habilidadState.esperandoPopup = true;
+            cancelAnimationFrame(animationFrameId);
+            iluminarPlanta(() => {
+                plantaImagen.src = imagenes.mediana;
+                mostrarMensajeCrecimientoDestreza(
+                    '¡Felicidades! Has ayudado a la planta a crecer a mediana. 🌿 Sigue así, 10 puntos más y será grande.',
+                    { from: 'pequena', to: 'mediana' },
+                    () => {
+                        generarColaEmojis(); // nueva ronda, misma velocidad y puntos acumulados
+                        habilidadState.esperandoPopup = false;
+                        dibujarCanvasHabilidad();
+                    }
+                );
+            });
         } else if (habilidadState.puntos >= 20 && habilidadState.etapa === 1) {
+            // Ronda 2 completada: Planta 2 -> Planta 3
             habilidadState.etapa = 2;
-            plantaImagen.src = imagenes.grande;
-            mostrarPopupVictoria();
+            habilidadState.esperandoPopup = true;
+            cancelAnimationFrame(animationFrameId);
+            iluminarPlanta(() => {
+                plantaImagen.src = imagenes.grande;
+                mostrarMensajeCrecimientoDestreza(
+                    '¡Guau! Ya es una planta mediana. Con 10 puntos más será grande del todo y ganarás.',
+                    { from: 'mediana', to: 'grande' },
+                    () => {
+                        generarColaEmojis(); // nueva ronda final, misma velocidad y puntos
+                        habilidadState.esperandoPopup = false;
+                        dibujarCanvasHabilidad();
+                    }
+                );
+            });
+        } else if (habilidadState.puntos >= 30 && habilidadState.etapa === 2) {
+            // Ronda 3 completada: victoria definitiva
+            habilidadState.esperandoPopup = true;
+            cancelAnimationFrame(animationFrameId);
+            iluminarPlanta(() => {
+                plantaImagen.src = imagenes.grande;
+                estallarPlanta(true);
+                mostrarPopupVictoria();
+                habilidadState.esperandoPopup = false;
+            });
         }
     }
 
