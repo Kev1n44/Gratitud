@@ -614,7 +614,8 @@ document.addEventListener('DOMContentLoaded', () => {
         velocidad: VELOCIDAD_BAJADA_DESTREZA,
         esperandoPopup: false,
         ultimoNombre: null,
-        ultimoEsBueno: null
+        ultimoEsBueno: null,
+        terminado: false // indica victoria final para no mostrar derrota después
     };
 
     function getCentrosDestreza() {
@@ -669,7 +670,10 @@ document.addEventListener('DOMContentLoaded', () => {
             emojisColaIzq: generarColaVerticalDestreza(centros.izq.x, true),
             emojisColaDer: generarColaVerticalDestreza(centros.der.x, false),
             velocidad: VELOCIDAD_BAJADA_DESTREZA,
-            esperandoPopup: false
+            esperandoPopup: false,
+            ultimoNombre: null,
+            ultimoEsBueno: null,
+            terminado: false
         };
         plantaImagen.src = imagenes.pequena;
         canvas.style.pointerEvents = 'auto';
@@ -695,7 +699,8 @@ document.addEventListener('DOMContentLoaded', () => {
             destrezaState.barraDer = Math.max(0, destrezaState.barraDer - DECAY_BARRA_POR_FRAME);
 
             // Si alguna barra llega a 0, la planta "muere" y se pierde la partida
-            if (destrezaState.barraIzq <= 0 || destrezaState.barraDer <= 0) {
+            // (solo si aún no se ha ganado el juego)
+            if (!destrezaState.terminado && (destrezaState.barraIzq <= 0 || destrezaState.barraDer <= 0)) {
                 destrezaState.esperandoPopup = true;
                 mostrarPopupDerrotaDestreza();
             }
@@ -876,6 +881,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             } else if (destrezaState.etapa === 2) {
                 // Victoria final: aquí no hay una nueva ronda, solo se dispara el festejo
+                destrezaState.terminado = true;
                 destrezaState.barraIzq = 0;
                 destrezaState.barraDer = 0;
                 iluminarPlanta(() => {
