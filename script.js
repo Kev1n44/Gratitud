@@ -688,45 +688,48 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.drawImage(plantaImagen, centros.planta.x - size / 2, centros.planta.y - size / 2, size, size);
         }
 
-        // Decay de barras (lento si no tocas buenos)
-        destrezaState.barraIzq = Math.max(0, destrezaState.barraIzq - DECAY_BARRA_POR_FRAME);
-        destrezaState.barraDer = Math.max(0, destrezaState.barraDer - DECAY_BARRA_POR_FRAME);
+        // Actualización de barras y movimiento SOLO si no hay popup en pantalla
+        if (!destrezaState.esperandoPopup) {
+            // Decay de barras (lento si no tocas buenos)
+            destrezaState.barraIzq = Math.max(0, destrezaState.barraIzq - DECAY_BARRA_POR_FRAME);
+            destrezaState.barraDer = Math.max(0, destrezaState.barraDer - DECAY_BARRA_POR_FRAME);
 
-        // Si alguna barra llega a 0, la planta "muere" y se pierde la partida
-        if (!destrezaState.esperandoPopup && (destrezaState.barraIzq <= 0 || destrezaState.barraDer <= 0)) {
-            destrezaState.esperandoPopup = true;
-            mostrarPopupDerrotaDestreza();
-        }
+            // Si alguna barra llega a 0, la planta "muere" y se pierde la partida
+            if (destrezaState.barraIzq <= 0 || destrezaState.barraDer <= 0) {
+                destrezaState.esperandoPopup = true;
+                mostrarPopupDerrotaDestreza();
+            }
 
-        // Mover emojis hacia abajo (izq y der)
-        destrezaState.emojisColaIzq.forEach(e => {
-            e.y += destrezaState.velocidad;
-        });
-        destrezaState.emojisColaDer.forEach(e => {
-            e.y += destrezaState.velocidad;
-        });
-
-        // Reciclar emojis que salieron por abajo: recolocar arriba
-        const margenAbajo = 100;
-        const techo = -80;
-        function reciclarColumna(columna, centroX) {
-            let minY = Infinity;
-            columna.forEach(em => { if (em.y < minY) minY = em.y; });
-            let nuevoMinY = minY;
-            columna.forEach(e => {
-                if (e.y > canvas.height + margenAbajo) {
-                    const esBueno = Math.random() < 0.5;
-                    const arr = esBueno ? emojisBuenos : emojisMalos;
-                    const data = arr[Math.floor(Math.random() * arr.length)];
-                    Object.assign(e, data);
-                    e.y = nuevoMinY - ESPACIO_VERTICAL_DESTREZA;
-                    e.activo = true;
-                    nuevoMinY = e.y;
-                }
+            // Mover emojis hacia abajo (izq y der)
+            destrezaState.emojisColaIzq.forEach(e => {
+                e.y += destrezaState.velocidad;
             });
+            destrezaState.emojisColaDer.forEach(e => {
+                e.y += destrezaState.velocidad;
+            });
+
+            // Reciclar emojis que salieron por abajo: recolocar arriba
+            const margenAbajo = 100;
+            const techo = -80;
+            function reciclarColumna(columna, centroX) {
+                let minY = Infinity;
+                columna.forEach(em => { if (em.y < minY) minY = em.y; });
+                let nuevoMinY = minY;
+                columna.forEach(e => {
+                    if (e.y > canvas.height + margenAbajo) {
+                        const esBueno = Math.random() < 0.5;
+                        const arr = esBueno ? emojisBuenos : emojisMalos;
+                        const data = arr[Math.floor(Math.random() * arr.length)];
+                        Object.assign(e, data);
+                        e.y = nuevoMinY - ESPACIO_VERTICAL_DESTREZA;
+                        e.activo = true;
+                        nuevoMinY = e.y;
+                    }
+                });
+            }
+            reciclarColumna(destrezaState.emojisColaIzq, centros.izq.x);
+            reciclarColumna(destrezaState.emojisColaDer, centros.der.x);
         }
-        reciclarColumna(destrezaState.emojisColaIzq, centros.izq.x);
-        reciclarColumna(destrezaState.emojisColaDer, centros.der.x);
 
         // Dibujar círculo izquierdo + barra alrededor
         ctx.save();
@@ -846,8 +849,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ) {
             destrezaState.esperandoPopup = true;
             if (destrezaState.etapa === 0) {
-                destrezaState.barraIzq = 0;
-                destrezaState.barraDer = 0;
+                // Nueva ronda con Planta 2: barras arrancan en 40
+                destrezaState.barraIzq = 40;
+                destrezaState.barraDer = 40;
                 destrezaState.etapa = 1;
                 iluminarPlanta(() => {
                     plantaImagen.src = imagenes.mediana;
@@ -858,8 +862,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     );
                 });
             } else if (destrezaState.etapa === 1) {
-                destrezaState.barraIzq = 0;
-                destrezaState.barraDer = 0;
+                // Nueva ronda con Planta 3: barras arrancan en 30
+                destrezaState.barraIzq = 30;
+                destrezaState.barraDer = 30;
                 destrezaState.etapa = 2;
                 iluminarPlanta(() => {
                     plantaImagen.src = imagenes.grande;
@@ -870,6 +875,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     );
                 });
             } else if (destrezaState.etapa === 2) {
+                // Victoria final: aquí no hay una nueva ronda, solo se dispara el festejo
                 destrezaState.barraIzq = 0;
                 destrezaState.barraDer = 0;
                 iluminarPlanta(() => {
