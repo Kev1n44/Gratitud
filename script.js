@@ -13,6 +13,71 @@ document.addEventListener('DOMContentLoaded', () => {
     const backToStartBtn = document.getElementById('back-to-start-btn');
     const gameUi = document.getElementById('game-ui');
 
+    // --- Variables y funciones de reinicio global ---
+    let animationFrameId;
+    let modoActual = null; // 'aprendizaje', 'habilidad' o 'destreza'
+
+    function reiniciarJuego() {
+        // Detener cualquier animación pendiente
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+        }
+
+        // Reiniciar modo actual
+        modoActual = null;
+
+        // Restaurar estado visual básico
+        canvas.style.boxShadow = 'none';
+        plantaImagen.src = imagenes.pequena;
+        puntosContainer.style.display = 'none';
+        puntosValor.innerText = '0';
+
+        // Cerrar posibles popups de mensaje que hayan quedado abiertos
+        document.querySelectorAll('.popup.mensaje-popup').forEach(p => p.remove());
+
+        // Limpiar intervalos heredados (por compatibilidad con versiones anteriores)
+        if (window.modoInterval) {
+            clearInterval(window.modoInterval);
+            window.modoInterval = null;
+        }
+
+        // Reestablecer estados de los modos
+        aprendizajeState = {
+            emojisActivos: [],
+            buenosColocados: 0,
+            etapa: 0,
+            plantaImg: 'pequena',
+            esperandoPopup: false,
+            ultimoEmoji: null,
+            buenosPorEtapa: [[], [], []]
+        };
+
+        habilidadState = {
+            puntos: 0,
+            etapa: 0,
+            emojisEnCola: [],
+            velocidad: 2,
+            frame: 0,
+            plantaImg: 'pequena',
+            esperandoPopup: false,
+            ultimoNombre: null,
+            ultimoEsBueno: null
+        };
+
+        destrezaState = {
+            barraIzq: 50,
+            barraDer: 50,
+            etapa: 0,
+            emojisColaIzq: [],
+            emojisColaDer: [],
+            velocidad: VELOCIDAD_BAJADA_DESTREZA,
+            esperandoPopup: false,
+            ultimoNombre: null,
+            ultimoEsBueno: null
+        };
+    }
+
     // --- Botones de navegación ---
     document.getElementById('instrucciones-aprendizaje-btn').addEventListener('click', () => {
         startScreen.classList.remove('active');
@@ -43,16 +108,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     backToStartBtn.addEventListener('click', () => {
         // Reiniciar todo y volver al inicio
-        cancelAnimationFrame(animationFrameId);
+        reiniciarJuego();
         gameScreen.classList.remove('active');
         startScreen.classList.add('active');
-        // Limpiar cualquier intervalo o estado
-        if (window.modoInterval) clearInterval(window.modoInterval);
     });
 
     // --- Variables globales del juego ---
-    let animationFrameId;
-    let modoActual = null; // 'aprendizaje', 'habilidad' o 'destreza'
     let plantaImagen = new Image();
     let plantaActual = 'pequena'; // pequena, mediana, grande
     const imagenes = {
@@ -104,6 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     function iniciarModoAprendizaje() {
+        reiniciarJuego();
         modoActual = 'aprendizaje';
         puntosContainer.style.display = 'none';
         modoTitulo.innerText = '🌱 Modo Aprendizaje';
@@ -402,6 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     function iniciarModoHabilidad() {
+        reiniciarJuego();
         modoActual = 'habilidad';
         puntosContainer.style.display = 'inline-block';
         puntosValor.innerText = '0';
@@ -540,6 +603,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const SUBIDA_BARRA_BUENO = 18;
     const BAJADA_BARRA_MALO = 30;
     const DECAY_BARRA_POR_FRAME = 0.04;
+    const UMBRAL_DESTREZA = 90; // porcentaje a partir del cual cuenta para el cambio de planta
 
     let destrezaState = {
         barraIzq: 50,
@@ -548,7 +612,9 @@ document.addEventListener('DOMContentLoaded', () => {
         emojisColaIzq: [],
         emojisColaDer: [],
         velocidad: VELOCIDAD_BAJADA_DESTREZA,
-        esperandoPopup: false
+        esperandoPopup: false,
+        ultimoNombre: null,
+        ultimoEsBueno: null
     };
 
     function getCentrosDestreza() {
@@ -591,6 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function iniciarModoDestreza() {
+        reiniciarJuego();
         modoActual = 'destreza';
         puntosContainer.style.display = 'none';
         modoTitulo.innerText = '🎯 Modo Destreza';
@@ -624,6 +691,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Decay de barras (lento si no tocas buenos)
         destrezaState.barraIzq = Math.max(0, destrezaState.barraIzq - DECAY_BARRA_POR_FRAME);
         destrezaState.barraDer = Math.max(0, destrezaState.barraDer - DECAY_BARRA_POR_FRAME);
+
+        // Si alguna barra llega a 0, la planta "muere" y se pierde la partida
+        if (!destrezaState.esperandoPopup && (destrezaState.barraIzq <= 0 || destrezaState.barraDer <= 0)) {
+            destrezaState.esperandoPopup = true;
+            mostrarPopupDerrotaDestreza();
+        }
 
         // Mover emojis hacia abajo (izq y der)
         destrezaState.emojisColaIzq.forEach(e => {
@@ -662,10 +735,31 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.strokeStyle = '#444';
         ctx.lineWidth = 8;
         ctx.stroke();
+        // Barra de progreso
         ctx.beginPath();
-        ctx.arc(centros.izq.x, centros.izq.y, R + 12, -Math.PI / 2, -Math.PI / 2 + (destrezaState.barraIzq / 100) * 2 * Math.PI);
+        ctx.arc(
+            centros.izq.x,
+            centros.izq.y,
+            R + 12,
+            -Math.PI / 2,
+            -Math.PI / 2 + (destrezaState.barraIzq / 100) * 2 * Math.PI
+        );
         ctx.strokeStyle = '#2ecc71';
         ctx.lineWidth = 8;
+        ctx.stroke();
+        // Marca visual del umbral (pequeño arco resaltado)
+        const angUmbral = -Math.PI / 2 + (UMBRAL_DESTREZA / 100) * 2 * Math.PI;
+        const anchoUmbral = 0.3;
+        ctx.beginPath();
+        ctx.arc(
+            centros.izq.x,
+            centros.izq.y,
+            R + 16,
+            angUmbral - anchoUmbral / 2,
+            angUmbral + anchoUmbral / 2
+        );
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3;
         ctx.stroke();
         ctx.beginPath();
         ctx.arc(centros.izq.x, centros.izq.y, R, 0, 2 * Math.PI);
@@ -683,10 +777,29 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.strokeStyle = '#444';
         ctx.lineWidth = 8;
         ctx.stroke();
+        // Barra de progreso
         ctx.beginPath();
-        ctx.arc(centros.der.x, centros.der.y, R + 12, -Math.PI / 2, -Math.PI / 2 + (destrezaState.barraDer / 100) * 2 * Math.PI);
+        ctx.arc(
+            centros.der.x,
+            centros.der.y,
+            R + 12,
+            -Math.PI / 2,
+            -Math.PI / 2 + (destrezaState.barraDer / 100) * 2 * Math.PI
+        );
         ctx.strokeStyle = '#2ecc71';
         ctx.lineWidth = 8;
+        ctx.stroke();
+        // Marca visual del umbral (pequeño arco resaltado)
+        ctx.beginPath();
+        ctx.arc(
+            centros.der.x,
+            centros.der.y,
+            R + 16,
+            angUmbral - anchoUmbral / 2,
+            angUmbral + anchoUmbral / 2
+        );
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3;
         ctx.stroke();
         ctx.beginPath();
         ctx.arc(centros.der.x, centros.der.y, R, 0, 2 * Math.PI);
@@ -712,8 +825,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.activo) ctx.fillText(e.emoji, e.x, e.y);
         });
 
-        // Comprobar si las dos barras están llenas (>= 100) para avanzar etapa
-        if (!destrezaState.esperandoPopup && destrezaState.barraIzq >= 100 && destrezaState.barraDer >= 100) {
+        // Texto del último emoji pulsado bajo la planta (+/- y color)
+        if (destrezaState.ultimoNombre) {
+            ctx.save();
+            ctx.globalAlpha = 1;
+            ctx.font = 'bold 22px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = destrezaState.ultimoEsBueno ? '#0a7d0a' : '#c00';
+            const signo = destrezaState.ultimoEsBueno ? '+' : '-';
+            ctx.fillText(`${signo} ${destrezaState.ultimoNombre}`, centros.planta.x, centros.planta.y + 85);
+            ctx.restore();
+        }
+
+        // Comprobar si las dos barras han superado el umbral para avanzar de etapa
+        if (
+            !destrezaState.esperandoPopup &&
+            destrezaState.barraIzq >= UMBRAL_DESTREZA &&
+            destrezaState.barraDer >= UMBRAL_DESTREZA
+        ) {
             destrezaState.esperandoPopup = true;
             if (destrezaState.etapa === 0) {
                 destrezaState.barraIzq = 0;
@@ -787,6 +917,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function mostrarPopupDerrotaDestreza() {
+        const popupDiv = document.createElement('div');
+        popupDiv.className = 'popup mensaje-popup';
+        popupDiv.style.position = 'absolute';
+        popupDiv.style.top = '50%';
+        popupDiv.style.left = '50%';
+        popupDiv.style.transform = 'translate(-50%, -50%)';
+        popupDiv.style.zIndex = '100';
+        popupDiv.innerHTML = `
+            <h2>💔 ¡Oh no!</h2>
+            <p>La plantita se ha quedado sin energía porque una de las barras llegó a cero. Eso significa que la descuidaste y se murió.</p>
+            <p>Puedes volver a intentarlo, cuidando bien los dos lados y tocando más elementos buenos.</p>
+            <button class="btn btn-primary" id="reiniciar-destreza">Iniciar de nuevo</button>
+        `;
+        document.querySelector('.game-container').appendChild(popupDiv);
+        document.getElementById('reiniciar-destreza').addEventListener('click', () => {
+            popupDiv.remove();
+            destrezaState.esperandoPopup = false;
+            iniciarModoDestreza();
+        });
+    }
+
     function procesarTapDestreza(clientX, clientY) {
         if (modoActual !== 'destreza' || destrezaState.esperandoPopup) return;
         const { x: tapX, y: tapY } = getPosicionEnCanvasEscalada(clientX, clientY);
@@ -817,6 +969,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const esBueno = emojisBuenos.some(b => b.emoji === mejorEmoji.emoji);
         mejorEmoji.activo = false;
+        // Guardar último emoji pulsado para mostrar bajo la planta
+        destrezaState.ultimoNombre = mejorEmoji.nombre || '';
+        destrezaState.ultimoEsBueno = esBueno;
         if (enIzq) {
             if (esBueno) destrezaState.barraIzq = Math.min(100, destrezaState.barraIzq + SUBIDA_BARRA_BUENO);
             else destrezaState.barraIzq = Math.max(0, destrezaState.barraIzq - BAJADA_BARRA_MALO);
