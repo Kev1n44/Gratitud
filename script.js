@@ -152,13 +152,19 @@ document.addEventListener('DOMContentLoaded', () => {
         { emoji: '🐞', nombre: 'Mariquita', mensaje: '🐞 Las mariquitas me protegen de plagas. ¡Gracias, amiguita! Agradece a los pequeños ayudantes.' },
         { emoji: '⏰', nombre: 'Tiempo', mensaje: '⏰ El tiempo y la paciencia me hacen crecer. Agradece por el tiempo que tienes para aprender.' },
         { emoji: '🤝', nombre: 'Protección', mensaje: '🤝 Manos que protegen. Gracias por cuidarme de los peligros. Agradece a quienes te protegen.' },
-        { emoji: '🗣️', nombre: 'Palabras', mensaje: '🗣️ Las palabras bonitas me alegran. Dar las gracias con palabras mágicas es muy poderoso.' }
+        { emoji: '🗣️', nombre: 'Palabras', mensaje: '🗣️ Las palabras bonitas me alegran. Dar las gracias con palabras mágicas es muy poderoso.' },
+        { emoji: '🍂', nombre: 'Compostaje', mensaje: '🍂 Las hojitas y restos se convierten en alimento para la tierra. ¡Gracias por reciclar! Agradece por dar una segunda vida a lo que la naturaleza nos da.' },
+        { emoji: '🎧', nombre: 'Música', mensaje: '🎧 La música suave me relaja y me hace crecer mejor. ¡Gracias por las melodías! Agradece por el arte y la belleza que nos rodean.' },
+        { emoji: '🪱', nombre: 'Lombriz', mensaje: '🪱 Las lombrices airean la tierra y la enriquecen. ¡Gracias, lombricitas! Agradece por los pequeños que trabajan bajo nuestros pies.' }
     ];
     const emojisMalos = [
         { emoji: '🪨', nombre: 'Piedra', mensaje: '🪨 Las piedras aplastan mis raíces. Cuidado por dónde pisas. Agradece por los caminos despejados.' },
         { emoji: '🔥', nombre: 'Fuego', mensaje: '🔥 El fuego me quema. ¡Qué peligro! Agradece por la seguridad y la calma.' },
         { emoji: '🪵', nombre: 'Tronco Seco', mensaje: '🪵 La falta de agua me seca. No olvides hidratarme. Agradece por el agua que nos quita la sed.' },
-        { emoji: '👟', nombre: 'Zapato', mensaje: '👟 Cuidado no me pisotees. Agradece por respetar a los seres vivos.' }
+        { emoji: '👟', nombre: 'Zapato', mensaje: '👟 Cuidado no me pisotees. Agradece por respetar a los seres vivos.' },
+        { emoji: '⛄', nombre: 'Frío extremo', mensaje: '⛄ El frío extremo me congela y me hace daño. Agradece por el calor del hogar y la ropa que te abriga.' },
+        { emoji: '☢️', nombre: 'Químicos', mensaje: '☢️ Los químicos dañinos envenenan la tierra y a mí. Agradece por cuidar la naturaleza sin contaminarla.' },
+        { emoji: '🗑️', nombre: 'Basura', mensaje: '🗑️ La basura contamina mi hogar y me hace mal. Agradece por separar y reciclar para cuidar el planeta.' }
     ];
     const todosLosEmojis = [...emojisBuenos, ...emojisMalos];
 
@@ -205,10 +211,10 @@ document.addEventListener('DOMContentLoaded', () => {
         dibujarCanvasAprendizaje();
     }
 
-    // Crea 3 grupos de 4 emojis buenos, todos distintos entre sí (12 en total)
+    // Crea 3 grupos de 4 emojis buenos, todos distintos entre sí (12 en total por partida)
     function inicializarBuenosPorEtapa() {
         const buenosMezclados = [...emojisBuenos].sort(() => Math.random() - 0.5);
-        const seleccion = buenosMezclados.slice(0, 12); // tenemos exactamente 12 buenos definidos
+        const seleccion = buenosMezclados.slice(0, 12); // elegimos 12 de los buenos disponibles
         aprendizajeState.buenosPorEtapa = [
             seleccion.slice(0, 4),
             seleccion.slice(4, 8),
