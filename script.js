@@ -854,29 +854,35 @@ document.addEventListener('DOMContentLoaded', () => {
         ) {
             destrezaState.esperandoPopup = true;
             if (destrezaState.etapa === 0) {
-                // Nueva ronda con Planta 2: barras arrancan en 40
-                destrezaState.barraIzq = 40;
-                destrezaState.barraDer = 40;
+                // Nueva ronda con Planta 2: congelar barras donde están y ajustarlas a 40
+                // solo después de cerrar el mensaje de crecimiento.
                 destrezaState.etapa = 1;
                 iluminarPlanta(() => {
                     plantaImagen.src = imagenes.mediana;
                     mostrarMensajeCrecimientoDestreza(
                         '¡Felicidades! Has ayudado a la planta a crecer a mediana. 🌿 Sigue así, 4 elementos buenos más y será grande.',
                         { from: 'pequena', to: 'mediana' },
-                        () => { destrezaState.esperandoPopup = false; }
+                        () => {
+                            destrezaState.barraIzq = 40;
+                            destrezaState.barraDer = 40;
+                            destrezaState.esperandoPopup = false;
+                        }
                     );
                 });
             } else if (destrezaState.etapa === 1) {
-                // Nueva ronda con Planta 3: barras arrancan en 30
-                destrezaState.barraIzq = 30;
-                destrezaState.barraDer = 30;
+                // Nueva ronda con Planta 3: congelar barras donde están y ajustarlas a 30
+                // solo después de cerrar el mensaje de crecimiento.
                 destrezaState.etapa = 2;
                 iluminarPlanta(() => {
                     plantaImagen.src = imagenes.grande;
                     mostrarMensajeCrecimientoDestreza(
                         '¡Guau! Ya es una planta mediana. Con 4 más será grande y ganarás.',
                         { from: 'mediana', to: 'grande' },
-                        () => { destrezaState.esperandoPopup = false; }
+                        () => {
+                            destrezaState.barraIzq = 30;
+                            destrezaState.barraDer = 30;
+                            destrezaState.esperandoPopup = false;
+                        }
                     );
                 });
             } else if (destrezaState.etapa === 2) {
