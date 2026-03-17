@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emojisMalos = [
         { emoji: '🪨', nombre: 'Piedra', mensaje: '🪨 Las piedras aplastan mis raíces. Cuida por dónde pisas y no dejes de agradecer por todos los caminos.' },
         { emoji: '🔥', nombre: 'Fuego', mensaje: '🔥 El fuego me hace daño. ¡Qué peligro! Y me recuerda la importancia de agradecer por la seguridad y la calma.' },
-        { emoji: '🪾', nombre: 'Tronco Seco', mensaje: '🪾 La falta de agua me seca. No olvides hidratarme y agradece por todo aquello que nos nutre.' },
+        { emoji: '🪵', nombre: 'Tronco Seco', mensaje: '🪵 La falta de agua me seca. No olvides hidratarme y agradece por todo aquello que nos nutre.' },
         { emoji: '👟', nombre: 'Zapato', mensaje: '👟 Cuidado, no me pisotees. Demos gracias por todos aquellos que respetan la vida.' },
         { emoji: '⛄', nombre: 'Frío extremo', mensaje: '⛄ El frío extremo me congela y me hace daño. Me recuerda la importancia de agradecer por el calor del hogar y la ropa que abriga.' },
         { emoji: '☢️', nombre: 'Químicos', mensaje: '☢️ Los químicos dañinos envenenan la tierra. Es una buena oportunidad para agradecer por aquellos que cuidan la naturaleza sin contaminarla.' },
@@ -238,12 +238,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const VELOCIDAD_BASE_APRENDIZAJE = 1;
     const FACTOR_ETAPA_APRENDIZAJE = 1; // cada etapa aumenta un 8% aprox
 
-    // Velocidad suave para que los emojis "floten" lentamente (se ajusta por etapa)
+    // Velocidad suave para que los emojis "floten" (misma sensación al inicio, un poco más rápidos en cada planta)
     function velocidadAleatoriaSuave() {
         const angulo = Math.random() * Math.PI * 2;
+        const etapa = aprendizajeState.etapa || 0;
+        // Etapa 0: factor 1.0 (igual que antes, velocidad que te gusta)
+        // Etapa 1: factor 1.2 (igual que antes)
+        // Etapa 2: factor 1.25 (ligeramente más lenta que antes, que era 1.4)
+        let factorEtapa = 1;
+        if (etapa === 1) {
+            factorEtapa = 1 + FACTOR_ETAPA_APRENDIZAJE; // 1.2
+        } else if (etapa >= 2) {
+            factorEtapa = 1.25;
+        }
         const velocidad =
             VELOCIDAD_BASE_APRENDIZAJE *
-            (1 + FACTOR_ETAPA_APRENDIZAJE * (aprendizajeState.etapa || 0)) *
+            factorEtapa *
             (0.8 + Math.random() * 0.4); // pequeña variación aleatoria
         return {
             vx: Math.cos(angulo) * velocidad,
