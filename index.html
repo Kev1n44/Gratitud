@@ -11,32 +11,32 @@
         <!-- Pantalla de Inicio (con Popup de Bienvenida) -->
         <div id="start-screen" class="screen active">
             <div class="popup welcome-popup">
-                <h1>🌱 ¡Bienvenido a Sembremos Gratitud! 🌱</h1>
-                <p>Hola, amiguito! Prepárate para una aventura donde aprenderemos a cuidar la naturaleza y a dar las gracias por todo lo que nos da. Elige cómo quieres jugar:</p>
+                <h1> ¡Sembremos Gratitud! 🌱</h1>
+                <p>¡Hola! Prepárate para una aventura donde aprenderemos a cuidar la naturaleza y a dar las gracias por todo lo que nos da. Busca la compañía de un adulto responsable y elige cómo quieres jugar:</p>
                 <div class="button-container">
                     <button id="instrucciones-aprendizaje-btn" class="btn btn-primary">📚 Modo Aprendizaje</button>
                     <button id="instrucciones-habilidad-btn" class="btn btn-primary">⚡ Modo Habilidad</button>
                     <button id="instrucciones-destreza-btn" class="btn btn-primary">🎯 Modo Destreza</button>
                 </div>
-                <p class="footer-note">¡Presiona un botón para ver las instrucciones!</p>
+                <p class="footer-note">¡Presiona un botón para ver las instrucciones de cada modo y comenzar a jugar!</p>
             </div>
         </div>
 
         <!-- Pantalla de Instrucciones de Aprendizaje -->
         <div id="instrucciones-aprendizaje-screen" class="screen">
             <div class="popup instrucciones-popup">
-                <h2>📚 Modo Aprendizaje</h2>
-                <p>Aquí aprenderás qué cosas ayudan a crecer a una planta y cuáles no. ¡Como en la vida, donde las cosas buenas nos hacen crecer con gratitud!</p>
+                <h2>📚 Modo Aprendizaje (para niños y niñas de 6 a 9 años)</h2>
+                <p>Aquí aprenderás qué elementos ayudan a crecer a una planta y cuáles no. Por ejemplo, la gratitud es uno de esos elementos que nos permiten crecer en nuestra vida</p>
                 <p><strong>✨ ¿Cómo jugar?</strong></p>
                 <ul>
-                    <li>Verás una plantita en el centro y emojis flotando a su alrededor.</li>
-                    <li>Arrastra los emojis BUENOS (💧, 🌱, ☀️, etc.) hasta la planta para ayudarla a crecer.</li>
-                    <li>¡Ten cuidado! Si arrastras un emoji MALO (🪨, 🔥, etc.), la planta se asustará (destello rojo).</li>
-                    <li>Por cada 4 emojis buenos que le des, ¡tu planta crecerá un poquito más!</li>
+                    <li>Verás una plantita en el centro y algunos elementos flotando a su alrededor.</li>
+                    <li>Arrastra los elementos que consideres beneficiosos (💧, 🌱, ☀️, etc.) hasta la planta para ayudarla a crecer.</li>
+                    <li>¡Ten cuidado! Si arrastras un elemento que no sea beneficioso (🪨, 🔥, etc.), la planta se asustará.</li>
+                    <li>Por cada 4 elementos beneficiosos que le des a tu planta, ¡esta crecerá un poquito más!</li>
                     <li>Tu objetivo es hacer que la planta pase de pequeña a mediana y luego a grande.</li>
                 </ul>
                 <div class="button-container">
-                    <button id="jugar-aprendizaje-btn" class="btn btn-primary">🌱 ¡A jugar aprendizaje!</button>
+                    <button id="jugar-aprendizaje-btn" class="btn btn-primary">🌱 ¡A jugar!</button>
                     <button id="volver-inicio-aprendizaje-btn" class="btn btn-primary">🏠 Volver al inicio</button>
                 </div>
             </div>
@@ -45,18 +45,18 @@
         <!-- Pantalla de Instrucciones de Habilidad -->
         <div id="instrucciones-habilidad-screen" class="screen">
             <div class="popup instrucciones-popup">
-                <h2>⚡ Modo Habilidad</h2>
-                <p>¡Pon a prueba tu rapidez! Ayuda a la planta a recibir solo lo bueno y esquiva lo malo. La gratitud también es rápida y certera.</p>
+                <h2>⚡ Modo Habilidad (para niños y niñas de 10 a 12 años)</h2>
+                <p>¡Pon a prueba tu rapidez! Ayuda a la planta a recibir solo lo beneficioso y esquiva lo no beneficioso. La gratitud también se trata de identificar todo aquello que nos puede traer lo necesario para avanzar.</p>
                 <p><strong>✨ ¿Cómo jugar?</strong></p>
                 <ul>
-                    <li>Los emojis pasarán volando de izquierda a derecha sobre la plantita.</li>
-                    <li>Debes tocar el emoji JUSTO cuando esté sobre el círculo mágico en el centro de la planta.</li>
-                    <li>Si tocas un emoji BUENO, sumas 2 puntos.</li>
-                    <li>Si tocas un emoji MALO, pierdes 2 puntos.</li>
-                    <li>Cuando llegues a 10 puntos, la planta crecerá a mediana. ¡Sigue! Cuando llegues a 20 puntos, se hará grande y ganarás.</li>
+                    <li>Los elementos pasarán de izquierda a derecha sobre la plantita.</li>
+                    <li>Debes tocar el elemento que consideres beneficioso, JUSTO cuando esté sobre la planta.</li>
+                    <li>Si tocas un elemento beneficioso, sumas 2 puntos.</li>
+                    <li>Si tocas un elemento que no sea beneficioso, pierdes 2 puntos.</li>
+                    <li>Cuando llegues a 10 puntos, la planta crecerá a mediana, cuando llegues a 20 puntos, la planta se hará grande y cuando llegues a 30 puntos, ¡ganarás!</li>
                 </ul>
                 <div class="button-container">
-                    <button id="jugar-habilidad-btn" class="btn btn-primary">⚡ ¡A jugar habilidad!</button>
+                    <button id="jugar-habilidad-btn" class="btn btn-primary">⚡ ¡A jugar!</button>
                     <button id="volver-inicio-habilidad-btn" class="btn btn-primary">🏠 Volver al inicio</button>
                 </div>
             </div>
@@ -65,20 +65,20 @@
         <!-- Pantalla de Instrucciones de Destreza -->
         <div id="instrucciones-destreza-screen" class="screen">
             <div class="popup instrucciones-popup">
-                <h2>🎯 Modo Destreza</h2>
-                <p>Usa los dos pulgares a la vez: en el centro verás la planta y debajo, a izquierda y derecha, dos círculos. Los emojis bajan sin parar por cada lado. ¡Toca solo los buenos en cada círculo y llena las dos barras!</p>
+                <h2>🎯 Modo Destreza (para chicos y chicas de 12 a 17 años)</h2>
+                <p>Usa los dos pulgares a la vez: en el centro verás la planta y debajo, a izquierda y derecha, dos círculos. Los elementos bajarán, pasando por cada círculo. ¡Toca solo los elementos beneficiosos cuando estén sobre cada círculo para llenar las barras verdes!</p>
                 <p><strong>✨ ¿Cómo jugar?</strong></p>
                 <ul>
-                    <li>La planta está en el centro (empezará como Planta 1).</li>
-                    <li>Debajo, a izquierda y derecha, hay dos círculos cómodos para los pulgares.</li>
-                    <li>Por cada círculo bajan emojis buenos y malos sin parar (en vertical).</li>
-                    <li>Cada círculo tiene una barra alrededor: toca emojis BUENOS para llenarla y evita tocar los MALOS.</li>
-                    <li>Si tocas un emoji bueno, la barra de ese lado sube. Si no tocas buenos, la barra baja lentamente; si tocas uno malo, baja más rápido.</li>
-                    <li>Cuando las DOS barras estén llenas a la vez (sin que ninguna esté vacía o a medias), la planta crecerá: primero a Planta 2, luego a Planta 3.</li>
-                    <li>Con la Planta 3, al llenar otra vez las dos barras, ¡ganas el juego!</li>
+                    <li>¡Tu deber es cuidar la planta que se ubica en el centro!</li>
+                    <li>Debajo, a izquierda y derecha, hay dos círculos con barras verdes a su alrededor que deberás ir llenando.</li>
+                    <li>Por cada círculo bajan elementos beneficiosos y no beneficiosos sin parar.</li>
+                    <li>Toca los elementos que consideres beneficiosos para la planta, justo cuando se encuentren sobre los círculos para llenar las barras verdes.</li>
+                    <li>Si tocas un elemento beneficioso, la barra de ese círculo sube. Si no tocas elementos beneficiosos, la barra baja lentamente; si tocas elementos no beneficiosos, la barra baja más rápido.</li>
+                    <li>Cuando las DOS barras estén llenas a la vez, la planta crecerá: primero a mediana y luego a grande.</li>
+                    <li>Luego de que tengas la planta grande y le brindes los elementos beneficiosos nuevamente, ¡ganas el juego!</li>
                 </ul>
                 <div class="button-container">
-                    <button id="jugar-destreza-btn" class="btn btn-primary">🎯 ¡A jugar destreza!</button>
+                    <button id="jugar-destreza-btn" class="btn btn-primary">🎯 ¡A jugar!</button>
                     <button id="volver-inicio-destreza-btn" class="btn btn-primary">🏠 Volver al inicio</button>
                 </div>
             </div>

@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const puntosValor = document.getElementById('puntos-valor');
     const backToStartBtn = document.getElementById('back-to-start-btn');
     const gameUi = document.getElementById('game-ui');
+    const logoFooter = document.getElementById('logo-footer');
 
     // --- Variables y funciones de reinicio global ---
     let animationFrameId;
@@ -129,6 +130,17 @@ document.addEventListener('DOMContentLoaded', () => {
         startScreen.classList.add('active');
     });
 
+    // --- Popup de créditos al tocar/clic en el logo del footer ---
+    if (logoFooter) {
+        logoFooter.style.cursor = 'pointer';
+        logoFooter.addEventListener('click', () => {
+            mostrarPopupCreditos();
+        });
+        logoFooter.addEventListener('touchstart', () => {
+            mostrarPopupCreditos();
+        }, { passive: true });
+    }
+
     // --- Variables globales del juego ---
     let plantaImagen = new Image();
     let plantaActual = 'pequena'; // pequena, mediana, grande
@@ -141,30 +153,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Emojis y sus mensajes (para ambos modos) ---
     const emojisBuenos = [
-        { emoji: '💧', nombre: 'Agua', mensaje: '💧 El agua es vida. ¡Gracias por hidratarme! Así como agradecemos por el agua que bebemos.' },
-        { emoji: '🪴', nombre: 'Tierra', mensaje: '🪴 Rica tierra me da hogar y comida. Demos gracias por la tierra que nos sostiene.' },
-        { emoji: '🌬️', nombre: 'Aire', mensaje: '🌬️ El aire me ayuda a respirar. ¡Gracias por el aire limpio! Agradece cada respiro.' },
-        { emoji: '☀️', nombre: 'Sol', mensaje: '☀️ El sol me da energía. Agradezcamos por sus cálidos rayos cada día.' },
-        { emoji: '💩', nombre: 'Abono', mensaje: '💩 El abono me nutre fuerte. ¡Gracias por este regalo de la naturaleza! Agradece por lo que la tierra nos da.' },
-        { emoji: '🐝', nombre: 'Abeja', mensaje: '🐝 Las abejas me ayudan a dar flores y frutos. ¡Gracias, abejitas! Agradece por los polinizadores.' },
-        { emoji: '❤️', nombre: 'Amor', mensaje: '❤️ El amor me hace sentir cuidada. Dar las gracias con amor hace crecer el corazón.' },
-        { emoji: '👀', nombre: 'Cuidado', mensaje: '👀 Me observas y cuidas. La gratitud es poner atención a lo que nos rodea.' },
-        { emoji: '🐞', nombre: 'Mariquita', mensaje: '🐞 Las mariquitas me protegen de plagas. ¡Gracias, amiguita! Agradece a los pequeños ayudantes.' },
-        { emoji: '⏰', nombre: 'Tiempo', mensaje: '⏰ El tiempo y la paciencia me hacen crecer. Agradece por el tiempo que tienes para aprender.' },
-        { emoji: '🤝', nombre: 'Protección', mensaje: '🤝 Manos que protegen. Gracias por cuidarme de los peligros. Agradece a quienes te protegen.' },
-        { emoji: '🗣️', nombre: 'Palabras', mensaje: '🗣️ Las palabras bonitas me alegran. Dar las gracias con palabras mágicas es muy poderoso.' },
-        { emoji: '🍂', nombre: 'Compostaje', mensaje: '🍂 Las hojitas y restos se convierten en alimento para la tierra. ¡Gracias por reciclar! Agradece por dar una segunda vida a lo que la naturaleza nos da.' },
-        { emoji: '🎧', nombre: 'Música', mensaje: '🎧 La música suave me relaja y me hace crecer mejor. ¡Gracias por las melodías! Agradece por el arte y la belleza que nos rodean.' },
-        { emoji: '🪱', nombre: 'Lombriz', mensaje: '🪱 Las lombrices airean la tierra y la enriquecen. ¡Gracias, lombricitas! Agradece por los pequeños que trabajan bajo nuestros pies.' }
+        { emoji: '💧', nombre: 'Agua', mensaje: '💧 El agua es vida. ¡Gracias por hidratarme! Recuerda agradecer por al agua que tienes para beber.' },
+        { emoji: '🪴', nombre: 'Tierra', mensaje: '🪴 La tierra me da hogar y comida. No olvides agradecer por la tierra que nos sostiene.' },
+        { emoji: '🌬️', nombre: 'Aire', mensaje: '🌬️ El aire me ayuda a respirar. ¡Recuerda dar gracias por el aire que te permite cada respiro.' },
+        { emoji: '☀️', nombre: 'Sol', mensaje: '☀️ El sol me da energía. No olvides agradecer por sus cálidos rayos de cada día.' },
+        { emoji: '💩', nombre: 'Abono', mensaje: '💩 El abono me nutre y me hace más fuerte. ¡Recuerda agradecer por todo lo que se transforma.' },
+        { emoji: '🐝', nombre: 'Abeja', mensaje: '🐝 Las abejas me ayudan a dar flores y frutos. No olvides agradecer por todo lo que te permite florecer.' },
+        { emoji: '❤️', nombre: 'Amor', mensaje: '❤️ El amor me hace sentir cuidada. Recuerda agradecer por el amor que te rodea.' },
+        { emoji: '👀', nombre: 'Cuidado', mensaje: '👀 El cuidado constante me permite bienestar. No olvides agradecer por quienes te cuidan.' },
+        { emoji: '🐞', nombre: 'Cucarrón', mensaje: '🐞 Los cucarrones me protegen de plagas. Recuerda agradecer por esos amigos que te acompañan.' },
+        { emoji: '⏰', nombre: 'Tiempo', mensaje: '⏰ El tiempo y la paciencia me permiten llegar a mi mejor versión. No olvides agradecer por el tiempo que tienes para compartir.' },
+        { emoji: '🤲', nombre: 'Protección', mensaje: '🤲 Las manos que me protegen, me permiten mantener saludable. Recuerda agradecer por la familia que te protege.' },
+        { emoji: '🗣️', nombre: 'Palabras', mensaje: '🗣️ Las palabras bonitas me generan tranquilidad. Dar las gracias es usar palabras mágicas.' },
+        { emoji: '🍂', nombre: 'Compostaje', mensaje: '🍂 Las hojitas y restos orgánicos se convierten en alimento para la tierra. ¡No olvides reciclar! Y dar las gracias por las oportunidades que el mundo nos da cada día.' },
+        { emoji: '🎧', nombre: 'Música', mensaje: '🎧 La música suave me relaja y me hace crecer mejor. ¡Recuerda agradecer por el arte y la belleza que nos rodean.' },
+        { emoji: '🪱', nombre: 'Lombriz', mensaje: '🪱 Las lombrices airean la tierra y la enriquecen. ¡No olvides agradecer por todos los que hacen de este mundo un lugar mejor.' }
     ];
     const emojisMalos = [
-        { emoji: '🪨', nombre: 'Piedra', mensaje: '🪨 Las piedras aplastan mis raíces. Cuidado por dónde pisas. Agradece por los caminos despejados.' },
-        { emoji: '🔥', nombre: 'Fuego', mensaje: '🔥 El fuego me quema. ¡Qué peligro! Agradece por la seguridad y la calma.' },
-        { emoji: '🪵', nombre: 'Tronco Seco', mensaje: '🪵 La falta de agua me seca. No olvides hidratarme. Agradece por el agua que nos quita la sed.' },
-        { emoji: '👟', nombre: 'Zapato', mensaje: '👟 Cuidado no me pisotees. Agradece por respetar a los seres vivos.' },
-        { emoji: '⛄', nombre: 'Frío extremo', mensaje: '⛄ El frío extremo me congela y me hace daño. Agradece por el calor del hogar y la ropa que te abriga.' },
-        { emoji: '☢️', nombre: 'Químicos', mensaje: '☢️ Los químicos dañinos envenenan la tierra y a mí. Agradece por cuidar la naturaleza sin contaminarla.' },
-        { emoji: '🗑️', nombre: 'Basura', mensaje: '🗑️ La basura contamina mi hogar y me hace mal. Agradece por separar y reciclar para cuidar el planeta.' }
+        { emoji: '🪨', nombre: 'Piedra', mensaje: '🪨 Las piedras aplastan mis raíces. Cuida por dónde pisas y no dejes de agradecer por todos los caminos.' },
+        { emoji: '🔥', nombre: 'Fuego', mensaje: '🔥 El fuego me hace daño. ¡Qué peligro! Y me recuerda la importancia de agradecer por la seguridad y la calma.' },
+        { emoji: '🪾', nombre: 'Tronco Seco', mensaje: '🪾 La falta de agua me seca. No olvides hidratarme y agradece por todo aquello que nos nutre.' },
+        { emoji: '👟', nombre: 'Zapato', mensaje: '👟 Cuidado, no me pisotees. Demos gracias por todos aquellos que respetan la vida.' },
+        { emoji: '⛄', nombre: 'Frío extremo', mensaje: '⛄ El frío extremo me congela y me hace daño. Me recuerda la importancia de agradecer por el calor del hogar y la ropa que abriga.' },
+        { emoji: '☢️', nombre: 'Químicos', mensaje: '☢️ Los químicos dañinos envenenan la tierra. Es una buena oportunidad para agradecer por aquellos que cuidan la naturaleza sin contaminarla.' },
+        { emoji: '🗑️', nombre: 'Basura', mensaje: '🗑️ La basura contamina mi hogar y me hace mal. Recordemos agradecer por aquellos que separan y reciclan para cuidar el planeta.' }
     ];
     const todosLosEmojis = [...emojisBuenos, ...emojisMalos];
 
@@ -882,7 +894,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 iluminarPlanta(() => {
                     plantaImagen.src = imagenes.mediana;
                     mostrarMensajeCrecimientoDestreza(
-                        '¡Felicidades! Has ayudado a la planta a crecer a mediana. 🌿 Sigue así, 4 elementos buenos más y será grande.',
+                        '¡Felicidades! Has hecho que tu planta crezca un poco más. 🌿 Sigue así, 4 elementos beneficiosos más y será aún más grande.',
                         { from: 'pequena', to: 'mediana' },
                         () => {
                             destrezaState.barraIzq = 40;
@@ -898,7 +910,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 iluminarPlanta(() => {
                     plantaImagen.src = imagenes.grande;
                     mostrarMensajeCrecimientoDestreza(
-                        '¡Guau! Ya es una planta mediana. Con 4 más será grande y ganarás.',
+                        '¡Wow! Ya es una planta más grande. Continúa así para ganar.',
                         { from: 'mediana', to: 'grande' },
                         () => {
                             destrezaState.barraIzq = 30;
@@ -945,7 +957,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
         popupDiv.innerHTML = `
-            <h3>🌱 ¡Crecer! 🌱</h3>
+            <h3>🌱 ¡Ha crecido! 🌱</h3>
             <p>${mensaje}</p>
             ${htmlCambio}
             <button class="btn btn-primary" id="continuar-popup-destreza">Continuar</button>
@@ -967,8 +979,8 @@ document.addEventListener('DOMContentLoaded', () => {
         popupDiv.style.zIndex = '100';
         popupDiv.innerHTML = `
             <h2>💔 ¡Oh no!</h2>
-            <p>La plantita se ha quedado sin energía porque una de las barras llegó a cero. Eso significa que la descuidaste y se murió.</p>
-            <p>Puedes volver a intentarlo, cuidando bien los dos lados y tocando más elementos buenos.</p>
+            <p>La plantita se ha quedado sin energía porque una de las barras llegó a cero. Eso significa que no recibió el cuidado necesario.</p>
+            <p>Puedes volver a intentarlo, cuidando bien los dos lados y tocando más elementos beneficiosos.</p>
             <button class="btn btn-primary" id="reiniciar-destreza">Iniciar de nuevo</button>
         `;
         document.querySelector('.game-container').appendChild(popupDiv);
@@ -1096,7 +1108,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         iluminarPlanta(() => {
                             plantaImagen.src = imagenes.mediana;
                             mostrarMensajeCrecimiento(
-                                '¡Felicidades! Has ayudado a la planta a crecer a mediana. 🌿 Sigue así, 4 elementos buenos más y será grande.',
+                                '¡Felicidades! Has hecho que tu planta crezca un poco más. 🌿 Sigue así, 4 elementos beneficiosos más y será aún más grande.',
                                 { from: 'pequena', to: 'mediana' }
                             );
                             aprendizajeState.emojisActivos = generarEmojisParaEtapa(aprendizajeState.etapa);
@@ -1107,7 +1119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         iluminarPlanta(() => {
                             plantaImagen.src = imagenes.grande;
                             mostrarMensajeCrecimiento(
-                                '¡Guau! Ya es una planta mediana. Con 4 más será grande y ganarás.',
+                                '¡Wow! Ya es una planta más grande. Con 4 más te acercarás a la victoria.',
                                 { from: 'mediana', to: 'grande' }
                             );
                             aprendizajeState.emojisActivos = generarEmojisParaEtapa(aprendizajeState.etapa);
@@ -1209,7 +1221,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         iluminarPlanta(() => {
                             plantaImagen.src = imagenes.mediana;
                             mostrarMensajeCrecimiento(
-                                '¡Felicidades! Has ayudado a la planta a crecer a mediana. 🌿 Sigue así, 4 elementos buenos más y será grande.',
+                                '¡Felicidades! Has hecho que tu planta crezca un poco más. 🌿 Sigue así, 4 elementos beneficiosos más y será aún más grande.',
                                 { from: 'pequena', to: 'mediana' }
                             );
                             aprendizajeState.emojisActivos = generarEmojisParaEtapa(aprendizajeState.etapa);
@@ -1220,7 +1232,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         iluminarPlanta(() => {
                             plantaImagen.src = imagenes.grande;
                             mostrarMensajeCrecimiento(
-                                '¡Guau! Ya es una planta mediana. Con 4 más será grande y ganarás.',
+                                '¡Wow! Ya es una planta más grande. Continúa así para ganar.',
                                 { from: 'mediana', to: 'grande' }
                             );
                             aprendizajeState.emojisActivos = generarEmojisParaEtapa(aprendizajeState.etapa);
@@ -1313,7 +1325,7 @@ document.addEventListener('DOMContentLoaded', () => {
             iluminarPlanta(() => {
                 plantaImagen.src = imagenes.mediana;
                 mostrarMensajeCrecimientoDestreza(
-                    '¡Felicidades! Has ayudado a la planta a crecer a mediana. 🌿 Sigue así, 10 puntos más y será grande.',
+                    '¡Felicidades! Has ayudado a la planta a crecer un poco más. 🌿 Sigue así, 10 puntos más y será aún más grande.',
                     { from: 'pequena', to: 'mediana' },
                     () => {
                         generarColaEmojis(); // nueva ronda, misma velocidad y puntos acumulados
@@ -1330,7 +1342,7 @@ document.addEventListener('DOMContentLoaded', () => {
             iluminarPlanta(() => {
                 plantaImagen.src = imagenes.grande;
                 mostrarMensajeCrecimientoDestreza(
-                    '¡Guau! Ya es una planta mediana. Con 10 puntos más será grande del todo y ganarás.',
+                    '¡Wow! Ya es una planta más grande. Con 10 puntos más te acercarás a la victoria.',
                     { from: 'mediana', to: 'grande' },
                     () => {
                         generarColaEmojis(); // nueva ronda final, misma velocidad y puntos
@@ -1461,7 +1473,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         popupDiv.innerHTML = `
-            <h3>🌱 ¡Crecer! 🌱</h3>
+            <h3>🌱 ¡Ha crecido! 🌱</h3>
             <p>${mensaje}</p>
             ${htmlCambio}
             <button class="btn btn-primary" id="continuar-popup">Continuar</button>
@@ -1568,7 +1580,7 @@ document.addEventListener('DOMContentLoaded', () => {
         popupDiv.style.transform = 'translate(-50%, -50%)';
         popupDiv.style.zIndex = '100';
         popupDiv.innerHTML = `
-            <h2>🎉 ¡Felicidades, Campeón! 🎉</h2>
+            <h2>🎉 ¡Felicidades! 🎉</h2>
             <p>La planta te da las gracias: "Gracias por cuidarme y ayudarme a crecer. ¡Tú también creces cuando agradeces!"</p>
             <p>Recuerda siempre dar las gracias por lo que tienes, por lo que llega a tu vida y por cada cosa que vives. ¡Eso es la gratitud! 🌟</p>
             <button class="btn btn-primary" id="volver-inicio">Volver al inicio</button>
@@ -1579,6 +1591,47 @@ document.addEventListener('DOMContentLoaded', () => {
             popupDiv.remove();
             backToStartBtn.click(); // Vuelve al inicio
         });
+    }
+
+    // Popup de créditos / información del proyecto
+    function mostrarPopupCreditos() {
+        const contenedor = document.querySelector('.game-container');
+        if (!contenedor) return;
+
+        const popupDiv = document.createElement('div');
+        popupDiv.className = 'popup mensaje-popup';
+        popupDiv.style.position = 'absolute';
+        popupDiv.style.top = '50%';
+        popupDiv.style.left = '50%';
+        popupDiv.style.transform = 'translate(-50%, -50%)';
+        popupDiv.style.zIndex = '120';
+
+        popupDiv.innerHTML = `
+            <h3 style="margin-bottom: 8px;">Para:</h3>
+            <div style="margin-top: 12mm; margin-bottom: 12mm;">
+                <img src="Comfama.png" alt="Comfama" style="height:25mm;width:auto;object-fit:contain;">
+            </div>
+            <h3 style="margin-bottom: 8px;">Creado por:</h3>
+            <div style="margin-top: 12mm; margin-bottom: 10mm;">
+                <img src="Logo.png" alt="Abrazos que emocionan" style="height:18mm;width:auto;object-fit:contain;">
+            </div>
+            <p style="margin-top: 4mm; margin-bottom: 8px;">
+                <strong>Redes sociales:</strong>
+                <a href="https://www.instagram.com/gogo.blu?igsh=MWVtbGY3MW43amU3MA==" target="_blank" rel="noopener noreferrer">
+                    @gogo.blu
+                </a>
+            </p>
+            <button class="btn btn-primary" id="cerrar-popup-creditos" style="margin-top: 12px;">Cerrar</button>
+        `;
+
+        contenedor.appendChild(popupDiv);
+
+        const cerrarBtn = document.getElementById('cerrar-popup-creditos');
+        if (cerrarBtn) {
+            cerrarBtn.addEventListener('click', () => {
+                popupDiv.remove();
+            });
+        }
     }
 
     // Ajustar tamaño del canvas cuando cambia el tamaño de la pantalla
