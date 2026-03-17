@@ -25,7 +25,7 @@ body {
     height: 100dvh; /* Usa la altura visual real, especialmente en móviles */
     max-height: 800px;
     background-color: #87CEEB; /* Color de fondo por si la imagen no carga */
-    background-image: url('Fondo.jpg');
+    background-image: url('Fondo.png');
     background-size: cover;
     background-position: center;
     border-radius: 30px;

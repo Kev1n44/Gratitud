@@ -1613,7 +1613,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <h3 style="margin-bottom: 8px;">Creado por:</h3>
             <div style="margin-top: 12mm; margin-bottom: 10mm;">
-                <img src="Logo.png" alt="Abrazos que emocionan" style="height:18mm;width:auto;object-fit:contain;">
+                <img src="Logo Color.png" alt="Abrazos que emocionan" style="height:18mm;width:auto;object-fit:contain;">
             </div>
             <p style="margin-top: 4mm; margin-bottom: 8px;">
                 <strong>Redes sociales:</strong>
