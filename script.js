@@ -163,11 +163,11 @@ document.addEventListener('DOMContentLoaded', () => {
         { emoji: '👀', nombre: 'Cuidado', mensaje: '👀 El cuidado constante me permite bienestar. No olvides agradecer por quienes te cuidan.' },
         { emoji: '🐞', nombre: 'Cucarrón', mensaje: '🐞 Los cucarrones me protegen de plagas. Recuerda agradecer por esos amigos que te acompañan.' },
         { emoji: '⏰', nombre: 'Tiempo', mensaje: '⏰ El tiempo y la paciencia me permiten llegar a mi mejor versión. No olvides agradecer por el tiempo que tienes para compartir.' },
-        { emoji: '🤲', nombre: 'Protección', mensaje: '🤲 Las manos que me protegen, me permiten mantener saludable. Recuerda agradecer por la familia que te protege.' },
+        { emoji: '🤲', nombre: 'Protección', mensaje: '🤲 Las manos que me protegen, me permiten mantenerme saludable. Recuerda agradecer por la familia que te protege.' },
         { emoji: '🗣️', nombre: 'Palabras', mensaje: '🗣️ Las palabras bonitas me generan tranquilidad. Dar las gracias es usar palabras mágicas.' },
         { emoji: '🍂', nombre: 'Compostaje', mensaje: '🍂 Las hojitas y restos orgánicos se convierten en alimento para la tierra. ¡No olvides reciclar! Y dar las gracias por las oportunidades que el mundo nos da cada día.' },
         { emoji: '🎧', nombre: 'Música', mensaje: '🎧 La música suave me relaja y me hace crecer mejor. ¡Recuerda agradecer por el arte y la belleza que nos rodean.' },
-        { emoji: '🪱', nombre: 'Lombriz', mensaje: '🪱 Las lombrices airean la tierra y la enriquecen. ¡No olvides agradecer por todos los que hacen de este mundo un lugar mejor.' }
+        { emoji: '🪱', nombre: 'Lombriz', mensaje: '🪱 Las lombrices airean la tierra y la enriquecen. ¡No olvides agradecer por todos los que hacen de este mundo un lugar mejor!' }
     ];
     const emojisMalos = [
         { emoji: '🪨', nombre: 'Piedra', mensaje: '🪨 Las piedras aplastan mis raíces. Cuida por dónde pisas y no dejes de agradecer por todos los caminos.' },
@@ -175,6 +175,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { emoji: '🪵', nombre: 'Tronco Seco', mensaje: '🪵 La falta de agua me seca. No olvides hidratarme y agradece por todo aquello que nos nutre.' },
         { emoji: '👟', nombre: 'Zapato', mensaje: '👟 Cuidado, no me pisotees. Demos gracias por todos aquellos que respetan la vida.' },
         { emoji: '⛄', nombre: 'Frío extremo', mensaje: '⛄ El frío extremo me congela y me hace daño. Me recuerda la importancia de agradecer por el calor del hogar y la ropa que abriga.' },
+        { emoji: '🌡️', nombre: 'Calor extremo', mensaje: '🌡️ El calor extremo me puede secar. Me recuerda la importancia de un entorno fresco y agradable para crecer.' },
+        { emoji: '📦', nombre: 'Objeto pesado', mensaje: '📦 Un peso excesivo puede destruirme. Es una buena oportunidad para agradecer por la organización y el orden que nos permite ser con más comodidad.' },
+        { emoji: '🚙', nombre: 'Polución', mensaje: '🚙 El humo constante de los carros puede hacerme entristecer. Es una buena oportunidad para agradecer por los espacios verdes, amplios y libres de conexión.' },
         { emoji: '☢️', nombre: 'Químicos', mensaje: '☢️ Los químicos dañinos envenenan la tierra. Es una buena oportunidad para agradecer por aquellos que cuidan la naturaleza sin contaminarla.' },
         { emoji: '🗑️', nombre: 'Basura', mensaje: '🗑️ La basura contamina mi hogar y me hace mal. Recordemos agradecer por aquellos que separan y reciclan para cuidar el planeta.' }
     ];
