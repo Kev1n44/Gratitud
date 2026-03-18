@@ -29,6 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
         modoActual = null;
 
         // Restaurar estado visual básico
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#000000';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         canvas.style.boxShadow = 'none';
         plantaImagen.src = imagenes.pequena;
         puntosContainer.style.display = 'none';
@@ -463,6 +468,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         actualizarFisicaEmojisAprendizaje();
 
+        // Forzar defaults del canvas (evita problemas en algunos navegadores)
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#000000';
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         // Dibujar planta en el centro
@@ -476,7 +485,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Dibujar emojis flotantes (centrados en su círculo)
-        ctx.font = '50px Arial';
+        // Stack de fuentes de emojis (Android a veces falla con solo Arial)
+        ctx.font = '50px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Android Emoji",Arial,sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
@@ -870,7 +880,12 @@ document.addEventListener('DOMContentLoaded', () => {
         destrezaState.emojisColaDer.forEach(e => { e.x = centros.der.x; });
 
         // Dibujar emojis (izq y der)
-        ctx.font = '50px Arial';
+        // Forzar defaults del canvas (evita problemas en algunos navegadores)
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#000000';
+
+        // Stack de fuentes de emojis (Android a veces falla con solo Arial)
+        ctx.font = '50px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Android Emoji",Arial,sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         destrezaState.emojisColaIzq.forEach(e => {
@@ -1611,8 +1626,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const contenedor = document.querySelector('.game-container');
         if (!contenedor) return;
 
+        if (document.getElementById('popup-creditos')) return;
+
         const popupDiv = document.createElement('div');
         popupDiv.className = 'popup mensaje-popup';
+        popupDiv.id = 'popup-creditos';
         popupDiv.style.position = 'absolute';
         popupDiv.style.top = '50%';
         popupDiv.style.left = '50%';
@@ -1641,9 +1659,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const cerrarBtn = document.getElementById('cerrar-popup-creditos');
         if (cerrarBtn) {
-            cerrarBtn.addEventListener('click', () => {
+            const cerrarHandler = (ev) => {
+                if (ev) {
+                    if (ev.stopPropagation) ev.stopPropagation();
+                    if (ev.preventDefault) ev.preventDefault();
+                }
                 popupDiv.remove();
-            });
+            };
+
+            // click (PC) + touchend (Android)
+            cerrarBtn.addEventListener('click', cerrarHandler);
+            cerrarBtn.addEventListener('touchend', cerrarHandler, { passive: false });
         }
     }
 
